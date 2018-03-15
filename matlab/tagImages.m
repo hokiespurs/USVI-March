@@ -1,5 +1,12 @@
 function tagImages(piksisbp, imFolder, trajName, savedir)
-%% 
+%% Constants 
+PHASECENTERZ = 0.147; % Estimated height of ARP over bottom of antenna
+CAMZDOWN = 0.381;     % Measured distance from bottom of gps to camera
+OFFSETZ = PHASECENTERZ + CAMZDOWN;
+% add some dependencies just in case
+addpath('dependencies')
+addpath('deg2utm')
+%%
 clc
 if nargin==0
     fprintf('Select SBP file\n');
@@ -72,6 +79,8 @@ posdata = readPOS(trajName);
 
 %% Interpolate Trigger Times
 camdata = interpPosdata(posdata,triggerStartTow);
+% offset camera z
+camdata.height = camdata.height - OFFSETZ;
 
 %% Convert LL to UTM
 [camdata.utme, camdata.utmn] = deg2utm(camdata.lat,camdata.lon);
