@@ -34,7 +34,7 @@ alllines = strsplit(alldata','\n');
 nlines = numel(alllines);
 
 %% Determine Header Start:Stop
-isComment = cellfun(@(x) ~isempty(x) & x(1)=='%',alllines);
+isComment = cellfun(@(x) ~isempty(x) && x(1)=='%',alllines);
 if any(isComment)
     indHeader = 1:find(isComment,1,'last');
     indData   = find(isComment,1,'last')+1:nlines;
