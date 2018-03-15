@@ -1,18 +1,18 @@
 function tagImages(piksisbp, imFolder, trajName, savedir)
-% TAGIMAGES Geotags images using the sbp triggers and processed pos traj
-%   Generates a CSV to geotag the imagse 
+% TAGIMAGES Short summary of this function goes here
+%   Detailed explanation goes here
 % 
 % Inputs:
 %   - piksisbp : SBP File Name
 %   - imFolder : Folder with JPG Images
-%   - trajName : POS Trajectory File
-%   - savedir  : Folder to Save Images and geotag
+%   - trajName : p
+%   - savedir  : Description of variable goes here
 % 
 % Outputs:
 %   - n/a 
 % 
 % Examples:
-%   - n/a
+%   - Example code goes here
 % 
 % Dependencies:
 %   - getImagesExif.m
@@ -21,7 +21,7 @@ function tagImages(piksisbp, imFolder, trajName, savedir)
 %   - readSbpMessages.m
 %   - secondsofday.m
 %   - dirname.m
-%   - deg2utm.m
+%   - ll2utm.m
 % 
 % Toolboxes Required:
 %   - n/a
@@ -30,7 +30,7 @@ function tagImages(piksisbp, imFolder, trajName, savedir)
 % Email         : richie@cormorantanalytics.com
 % Date Created  : 15-Mar-2018
 % Date Modified : 15-Mar-2018
-% Github        : https://github.com/hokiespurs/USVI-March
+% Github        : 
 %% Constants 
 PHASECENTERZ = 0.147; % Estimated height of ARP over bottom of antenna
 CAMZDOWN = 0.381;     % Measured distance from bottom of gps to camera
