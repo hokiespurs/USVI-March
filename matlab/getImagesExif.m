@@ -9,11 +9,12 @@ imExposureTime = nan(nImages,1);
 imFNumber = nan(nImages,1);
 for i=1:nImages
    meta = imfinfo(imNames{i});
-   imDateTime(i) = datenum(meta.DigitalCamera.DateTimeDigitized,'yyyy:mm:dd HH:MM:ss');
-   imFocalLength(i) = meta.DigitalCamera.FocalLength;
-   imIso(i) = meta.DigitalCamera.ISOSpeedRatings;
-   imExposureTime(i) = meta.DigitalCamera.ExposureTime;
-   imFNumber(i) = meta.DigitalCamera.FNumber;
+   dc = meta.DigitalCamera;
+   imDateTime(i) = datenum(dc.DateTimeDigitized,'yyyy:mm:dd HH:MM:ss');
+   imFocalLength(i) = dc.FocalLength;
+   imIso(i) = dc.ISOSpeedRatings;
+   imExposureTime(i) = dc.ExposureTime;
+   imFNumber(i) = dc.FNumber;
    [~,exif.fname{i},~] = fileparts(imNames{i});
 end
 imtow = secondsofweek(imDateTime);

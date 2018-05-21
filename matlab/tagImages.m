@@ -39,7 +39,7 @@ OFFSETZ = PHASECENTERZ + CAMZDOWN;
 addpath('dependencies')
 addpath('deg2utm')
 %%
-clc
+
 if nargin==0
     fprintf('Select SBP file\n');
     [piksisbp,dname] = uigetfile('*.sbp','Select SBP File');
@@ -63,14 +63,14 @@ end
 % savedir  = 'C:\Users\slocumr\github\USVI-March\matlab';
 
 %% Make sure there are some images first
-imNames = dirname([imFolder '/*.jpg']);
+imNames = [dirname([imFolder '/*.jpg']) dirname([imFolder '/*.arw'])];
 if numel(imNames)==0
-   fprintf('Image Folder: %s\n',[imFolder '/*.jpg']);
+   fprintf('Image Folder: %s\n',[imFolder '/*.jpg/arw']);
    error('No Images in that Folder'); 
 end
 %% Read MSGCSV_EXTEVENT
 fprintf('Reading SBP (This can take a minute)...%s\n',datestr(now));
-sbp = readSbpMessages(piksisbp);
+sbp = readSbpMessages2(piksisbp);
 nTriggers = numel(sbp.EXT_EVENT.data);
 % Number of triggers should be even (every falling followed by a rising)
 if mod(nTriggers,2)==1 
@@ -97,7 +97,6 @@ triggerStartTow = sbp.EXT_EVENT.tow(1:2:end);
 
 %% Get Image Names and Metadata
 fprintf('Getting Image Metadata...%s\n',datestr(now));
-imNames = dirname([imFolder '/*.jpg']);
 exif = getImagesExif(imNames);
 printImagesExif(exif);
 
@@ -115,7 +114,14 @@ camdata = interpPosdata(posdata,triggerStartTow);
 camdata.height = camdata.height - OFFSETZ;
 
 %% Convert LL to UTM
+badind = isnan(camdata.lat);
+camdata.lat(badind)=0;
+camdata.lon(badind)=0;
 [camdata.utme, camdata.utmn] = deg2utm(camdata.lat,camdata.lon);
+camdata.lat(badind)=nan;
+camdata.lon(badind)=nan;
+camdata.utme(badind)=nan;
+camdata.utmn(badind)=nan;
 
 %% Save Data
 fprintf('Exporting Data...%s\n',datestr(now));
@@ -140,6 +146,22 @@ ylabel(c,'Elevation');
 grid on
 saveas(f,[savedir '/plot_topdown.png']);
 
+f3 = figure(3);clf;
+set(f3,'Units','Normalize','Position',[0.1 0.1 0.8 0.8]);
+scatter(posdata.data.lon,posdata.data.lat,20,posdata.data.Q,'filled');
+hold on
+plot(camdata.lon,camdata.lat,'m*','markersize',20);
+text(camdata.lon(1:2:end),camdata.lat(1:2:end),exif.fname(1:2:end))
+xlabel('Longitude');
+ylabel('Latitude');
+caxis([0 4]-0.5);
+cmap = jet(7);
+colormap(cmap([1 4 5 7],:));
+c = colorbar;
+ylabel(c,'Elevation');
+grid on
+saveas(f3,[savedir '/plot_topdown_qual.png']);
+
 % elevation, camera name on x axis
 f2 = figure(2);
 set(f2,'Units','Normalize','Position',[0.1 0.1 0.8 0.8]);
@@ -161,13 +183,13 @@ if nargin==2
     fid = 1;
 end
 
-fprintf(fid,' N , Image Name, Lat, Lon, UTMe, UTMN, Height, sdn,sde,sdu,sdne,sdeu,sdun\n');
+fprintf(fid,' N , Image Name, Time, Lat, Lon, UTMe, UTMN, Height, sdn,sde,sdu,sdne,sdeu,sdun\n');
 for i=1:exif.nImages
-   fprintf(fid,'%3g, %s.jpg, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n',i,...
-       exif.fname{i},camdata.lat(i), camdata.lon(i), camdata.utme(i), ...
+   fprintf(fid,'%3g, %s.dng, %s, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n',i,...
+       exif.fname{i},datestr(exif.imDateTime(i),'yyyymmdd-HHMMss.fff'),...
+       camdata.lat(i), camdata.lon(i), camdata.utme(i), ...
        camdata.utmn(i), camdata.height(i), camdata.sdn(i), camdata.sde(i), ...
        camdata.sdu(i), camdata.sdne(i), camdata.sdeu(i), camdata.sdun(i));
-       
 end
 
 end

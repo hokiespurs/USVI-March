@@ -1,4 +1,4 @@
-function sbp = readSbpMessages(fname,sbp2reportpath)
+function sbp = readSbpMessages2(fname,sbp2reportpath)
 %%
 SENDERID = 39016;
 
@@ -17,6 +17,11 @@ fid = fopen(csvname);
 alllines= strsplit(fread(fid,'*char')','\n');
 fclose(fid);
 
+% only find external events
+badind = cellfun(@(x) findbadinds(x),alllines);
+
+alllines(badind)=[];
+
 % remove bad lines
 sendid = cellfun(@(x) getnum(x,1),alllines);
 badind = isnan(sendid) | SENDERID~=SENDERID;
@@ -32,16 +37,11 @@ for i=1:numel(C)
    msgname = getmsgname(alllines{ind(i)});
    msgname = strrep(msgname,'-','_');
    dataind = msgidnum==C(i);
-   if strcmp(msgname,'EXT_EVENT')
-       fprintf('processing %s\n',msgname);
-       try
-           eval(['sbp.' msgname '.data = msgdata(dataind)'';' ]);
-           eval(['sbp.' msgname '.tow = msgtow(dataind)'';' ]);
-       catch
-           %        warning('couldnt save MSG = "%s" data to sbp structure\n',msgname);
-       end
-   else
-       fprintf('skipping %s\n',msgname);
+   try
+       eval(['sbp.' msgname '.data = msgdata(dataind)'';' ]);
+       eval(['sbp.' msgname '.tow = msgtow(dataind)'';' ]);
+   catch
+       warning('couldnt save MSG = "%s" data to sbp structure\n',msgname);
    end
 end
 
