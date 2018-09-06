@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <reference version="1.2.0">
+    <cameras>
+      <camera label="0804_MAVIC_WESTNORTHWEST_DJI_0002.jpg">
+        <reference x="326811.415154" y="1967491.255085" z="121.400000" enabled="true"/>
+      </camera>
+      <camera label="0804_MAVIC_WESTNORTHWEST_DJI_0011.jpg">
+        <reference x="326905.448200" y="1967530.553939" z="121.100000" enabled="true"/>
+      </camera>
+      <camera label="0804_MAVIC_WESTNORTHWEST_DJI_0051.jpg">
+        <reference x="327088.252300" y="1967616.208319" z="121.200000" enabled="true"/>
+      </camera>
+      <camera label="0804_MAVIC_WESTNORTHWEST_DJI_0061.jpg">
+        <reference x="327086.734389" y="1967504.371353" z="121.300000" enabled="true"/>
+      </camera>
+      <camera label="0814_MAVIC_NE_DJI_0004.jpg">
+        <reference x="329542.321364" y="1967307.061881" z="121.200000" enabled="true"/>
+      </camera>
+    </cameras>
+  </reference>

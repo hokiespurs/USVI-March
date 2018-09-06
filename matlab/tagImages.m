@@ -1,4 +1,4 @@
-function tagImages(piksisbp, imFolder, trajName, savedir)
+function tagImages(piksisbp, imFolder, trajName, savedir, camzdown)
 % TAGIMAGES Geotags images using the sbp triggers and processed pos traj
 %   Generates a CSV to geotag the imagse 
 % 
@@ -7,7 +7,7 @@ function tagImages(piksisbp, imFolder, trajName, savedir)
 %   - imFolder : Folder with JPG Images
 %   - trajName : POS Trajectory File
 %   - savedir  : Folder to Save Images and geotag
-% 
+%   - camzdown : Distance from Antenna to Camera ((+) if Cam Below Antenna)
 % Outputs:
 %   - n/a 
 % 
@@ -32,9 +32,10 @@ function tagImages(piksisbp, imFolder, trajName, savedir)
 % Date Modified : 15-Mar-2018
 % Github        : https://github.com/hokiespurs/USVI-March
 %% Constants 
-PHASECENTERZ = 0.147; % Estimated height of ARP over bottom of antenna
-CAMZDOWN = 0.381;     % Measured distance from bottom of gps to camera
-OFFSETZ = PHASECENTERZ + CAMZDOWN;
+PHASECENTERZ = 0;     % Fix for future 
+% CAMZDOWN = 0.381;     % Gimbal Mount: Antenna ARP - Camera Focal Plane
+% CAMZDOWN = 0.344;     % Fixed Mount: Antenna ARP - Camera Focal Plane
+OFFSETZ = PHASECENTERZ + camzdown;
 % add some dependencies just in case
 addpath('dependencies')
 addpath('deg2utm')
@@ -129,6 +130,11 @@ fid = fopen([savedir '/taggedImages.csv'],'w+t');
 printTagTriggers(exif,camdata,fid)
 fclose(fid);
 
+%% Save Readme
+fid2 = fopen([savedir '/readme.txt'],'w+t');
+fprintf(fid2,'Data processed using "tagimages.m"\n');
+fprintf(fid2,'Z Offset: %.3fm\n',camzdown);
+fclose(fid2);
 %% Make Plots
 fprintf('Generating Figures...%s\n',datestr(now));
 % top down colored by elevation, magenta camera positions, text for camera
@@ -185,7 +191,7 @@ end
 
 fprintf(fid,' N , Image Name, Time, Lat, Lon, UTMe, UTMN, Height, sdn,sde,sdu,sdne,sdeu,sdun\n');
 for i=1:exif.nImages
-   fprintf(fid,'%3g, %s.dng, %s, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n',i,...
+   fprintf(fid,'%3g,%s.dng,%s,%.9f,%.9f,%.9f,%.9f,%.9f,%.9f,%.9f,%.9f,%.9f,%.9f,%.9f\n',i,...
        exif.fname{i},datestr(exif.imDateTime(i),'yyyymmdd-HHMMss.fff'),...
        camdata.lat(i), camdata.lon(i), camdata.utme(i), ...
        camdata.utmn(i), camdata.height(i), camdata.sdn(i), camdata.sde(i), ...

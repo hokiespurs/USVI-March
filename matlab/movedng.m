@@ -14,3 +14,9 @@ else
    warning('%s already exists\n',dngname);
 end
 end
+
+%%
+[a,b]=dirname('P:\Slocum\USVI_project\01_DATA\20180319_USVI_UAS_BATHY\01_RAWDATA\20180325_BUCK\02_UAS');
+b([6 8 10])= [];
+[c,d]=dirname('P:\Slocum\USVI_project\01_DATA\20180319_USVI_UAS_BATHY\01_RAWDATA\20180328_WHALEPOINT\02_UAS');
+foldernames = [b; d];
