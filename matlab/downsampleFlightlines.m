@@ -1,6 +1,7 @@
 function downsampleFlightlines
-DOPLOT = false;
+DOPLOT = true;
 DONAMES = false;
+DOOUTPUT = true;
 [~,dnames] = dirname('P:\Slocum\USVI_project\01_DATA\20180319_USVI_UAS_BATHY\02_PROCDATA\06_PROCIMAGES\*MAVIC*',0);
 HFOV = 65.77;
 VFOV = 51.74;
@@ -10,7 +11,7 @@ for i=1:numel(dnames)
     dname = dnames{i};
     [~,justname,~]=fileparts(dname);
     
-    traj = importdata([dnames{i} '/02_TRAJECTORY/imagepos.csv']);
+    traj = importdata([dnames{i} '/02_TRAJECTORY/imageposUTM.csv']);
     
     trajNames = traj.textdata(2:end,1);
     trajLon = traj.data(:,1);
@@ -18,7 +19,7 @@ for i=1:numel(dnames)
     
     [trajX,trajY]=deg2utm(trajLat,trajLon);
     
-    trajZ = ((traj.data(:,3))+40.26);
+    trajZ = ((traj.data(:,5))+40.26);
     
     %% Rotate Data
     
@@ -72,14 +73,30 @@ for i=1:numel(dnames)
     
     for j=1:numel(flightlinesHalfHalf)
         flightlinesHalfHalf{j}=flightlinesHalfHalf{j}(1:2:end);
-        XsHalfHalf{j}= Xs(flightlineindHalfHalf{j}(1:2:end));
-        AsHalfHalf{j}= As(flightlineindHalfHalf{j}(1:2:end));
+        XsHalfHalf{j}= Xs(flightlineindHalfHalf{j}(1:4:end));
+        AsHalfHalf{j}= As(flightlineindHalfHalf{j}(1:4:end));
     end
     
     %% Visualize
     if DOPLOT
         cmap = lines(nlines);
-        figure(3);clf
+        f=figure(i);clf
+        set(f,'units','normalized','position',[0.05 0.1 0.8 0.8]);
+        hold on
+        tot = numel(Xs);
+        tothalfhalf = 0;
+        for j=1:numel(flightlinesHalfHalf)
+            plot(XsHalfHalf{j},AsHalfHalf{j},'mo','markersize',28,'MarkerFaceColor','m');
+            tothalfhalf = tothalfhalf + numel(XsHalfHalf{j});
+        end
+        
+        tothalf = 0;
+        for j=1:numel(flightlinesHalf)
+            plot(XsHalf{j},AsHalf{j},'ko','markersize',20,'markerFaceColor','c');
+            plot(XsHalf{j},AsHalf{j},'kx','markersize',20);
+            tothalf = tothalf + numel(XsHalf{j});
+        end
+        
         plot(Xs,As,'k-');hold on
         scatter(Xs,As,50,flightlinenum,'filled')
         colormap(cmap);
@@ -89,12 +106,9 @@ for i=1:numel(dnames)
         if DONAMES
             text(Xs,As+1,fixfigstring(trajNames),'Rotation',45);
         end
-        for j=1:numel(flightlinesHalf)
-            plot(XsHalf{j},AsHalf{j},'kx','markersize',20);
-            plot(XsHalf{j},AsHalf{j},'ko','markersize',20);
-        end
+        
         drawnow
-        pause(2);
+%         pause(2);
     end
     %% Compute Overlap/Sidelap
     Alt = median(trajZ);
@@ -107,31 +121,43 @@ for i=1:numel(dnames)
     NPercents = [2 3 4 5 6 8];
     [~,ind] = min(abs(Percents-SL));
     Nsidelap = NPercents(ind);
-    %% Downsample Each
-    if ~exist([dnames{i} '/05_DOWNSAMPLE'],'dir')
-        mkdir([dnames{i} '/05_DOWNSAMPLE']);
-    end
-    switch Nsidelap
-        case 2
-            writeNames([dnames{i} '/05_DOWNSAMPLE/2.csv'], flightlines);
-        case 3
-            writeNames([dnames{i} '/05_DOWNSAMPLE/3.csv'], flightlines);
-        case 4
-            writeNames([dnames{i} '/05_DOWNSAMPLE/4.csv'], flightlines);
-            writeNames([dnames{i} '/05_DOWNSAMPLE/2.csv'], flightlinesHalf);
-        case 5
-            writeNames([dnames{i} '/05_DOWNSAMPLE/5.csv'], flightlines);
-        case 6
-            writeNames([dnames{i} '/05_DOWNSAMPLE/6.csv'], flightlines);
-            writeNames([dnames{i} '/05_DOWNSAMPLE/3.csv'], flightlinesHalf);
-        case 8
-            writeNames([dnames{i} '/05_DOWNSAMPLE/8.csv'], flightlines);
-            writeNames([dnames{i} '/05_DOWNSAMPLE/4.csv'], flightlinesHalf);
-            writeNames([dnames{i} '/05_DOWNSAMPLE/2.csv'], flightlinesHalfHalf);
-    end
-    
     %%
-    fprintf('%30s | %8.1f | %8.1f | %8.1f | %8.1fm | %8.1fm | %8.0f \n',justname,OL,SL,Percents(ind),DXOL,DXSL,NPercents(ind));
+    fprintf('%30s | %8.1f | %8.1f | %8.1f | %8.1fm | %8.1fm | %8.0f ',justname,OL,SL,Percents(ind),DXOL,DXSL,NPercents(ind));
+
+    %% Downsample Each
+    if DOOUTPUT
+        if ~exist([dnames{i} '/05_DOWNSAMPLE'],'dir')
+            mkdir([dnames{i} '/05_DOWNSAMPLE']);
+        end
+        switch Nsidelap
+            case 2
+                writeNames([dnames{i} '/05_DOWNSAMPLE/2.csv'], flightlines);
+                fprintf('-%5i\n',tot);
+            case 3
+                writeNames([dnames{i} '/05_DOWNSAMPLE/3.csv'], flightlines);
+                fprintf('-%5i\n',tot);
+            case 4
+                writeNames([dnames{i} '/05_DOWNSAMPLE/4.csv'], flightlines);
+                writeNames([dnames{i} '/05_DOWNSAMPLE/2.csv'], flightlinesHalf);
+                fprintf('-%5i',tot);
+                fprintf('  2-%5i\n',tothalf);
+            case 5
+                writeNames([dnames{i} '/05_DOWNSAMPLE/5.csv'], flightlines);
+                fprintf('-%5i\n',tot);
+            case 6
+                writeNames([dnames{i} '/05_DOWNSAMPLE/6.csv'], flightlines);
+                writeNames([dnames{i} '/05_DOWNSAMPLE/3.csv'], flightlinesHalf);
+                fprintf('-%5i',tot);
+                fprintf('  3-%5i\n',tothalf);
+            case 8
+                writeNames([dnames{i} '/05_DOWNSAMPLE/8.csv'], flightlines);
+                writeNames([dnames{i} '/05_DOWNSAMPLE/4.csv'], flightlinesHalf);
+                writeNames([dnames{i} '/05_DOWNSAMPLE/2.csv'], flightlinesHalfHalf);
+                fprintf('-%5i',tot);
+                fprintf('  4-%5i',tothalf);
+                fprintf('  2-%5i\n',tothalfhalf);
+        end
+    end
 end
 end
 
