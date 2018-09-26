@@ -1,10 +1,4 @@
-function makeSfMStatsPlot(fname,justname,pstrajectory,trajectory,sensor,dense,sparse,tideval)
-% generate ortho
-ortho = makeortho(dense,0.25,justname,pstrajectory,sensor);
-
-% compute camera position errors
-camposerror = calccamposerror(pstrajectory,trajectory);
-
+function makeSfMStatsPlot(fname,justname,pstrajectory,trajectory,sensor,dense,sparse,tideval, ortho, camposerror)
 %% Make 3x3 figure with lots of info
 f = figure(100);clf
 axg = axgrid(3,3,0.1,0.1,0.05,0.9,0.05,0.95);
@@ -18,6 +12,9 @@ TEXTARGS = {'interpreter','latex','fontsize',14};
 %% Ortho
 h(1) = axg(1);
 imagesc(ortho.As,ortho.Xs,ortho.rgb);
+hold on
+plot(trajectory.As,trajectory.Xs,'m.','markersize',5);
+plot(pstrajectory.As,pstrajectory.Xs,'g.','markersize',5);
 
 set(gca,'ydir','normal');
 axis equal
@@ -92,10 +89,26 @@ axis equal
 h(5) = axg(5);
 pcolor(ortho.As,ortho.Xs,ortho.ncameras);shading flat
 
+labelnums = (1:9).^2;
+labelinds = 2*(labelnums(1:end-1)+diff(labelnums)/2);
+labelstr = {' 1 (<50%)',' 2 (50%)',' 3 (66%)',' 4 (75%)',' 5 (80%)',' 6 (83.7%)',' 7 (85%)',' 8 (88%)'};
+colors = parula(8);
+
+cmap = nan(labelinds(end),3);
+cmap(1:labelinds(1),:)=repmat(colors(1,:),numel(1:labelinds(1)),1);
+for i=2:numel(labelinds)
+    cmap(labelinds(i-1)+1:labelinds(i),:)=repmat(colors(i,:),numel(labelinds(i-1)+1:labelinds(i)),1);
+end
+
 c = colorbar;
 ylabel(c,'Number of Cameras',COLORBARARGS{:});
+c.Ticks = labelnums;
+c.TickLabels = labelstr;
 
-colormap(h(5),parula(11));
+caxis([0 labelinds(end)/2]);
+colormap(h(5),cmap);
+
+axis equal;
 
 xlabel('Along-shore(m)',XLABELARGS{:});
 ylabel('Cross-shore(m)',YLABELARGS{:});
@@ -103,6 +116,7 @@ title('Number of Cameras',TITLEARGS{:});
 %% Point Density
 h(4) = axg(4);
 pcolor(ortho.As,ortho.Xs,ortho.ptdensity);shading flat
+axis equal;
 
 c = colorbar;
 ylabel(c,'Dense Point Density',COLORBARARGS{:});
@@ -155,45 +169,4 @@ bigtitle(justname,0.5,0.95,'interpreter','latex','fontsize',24);
 
 %% Save Figure
 saveas(f,fname);
-end
-
-function camposerror = calccamposerror(pstrajectory,trajectory)
-    camposerror.Xs = trajectory.Xs;
-    camposerror.As = trajectory.As;
-    camposerror.Z  = trajectory.Z;
-    
-    camposerror.dXs = pstrajectory.Xs - trajectory.Xs;
-    camposerror.dAs = pstrajectory.As - trajectory.As;
-    camposerror.dZ  = pstrajectory.Z - trajectory.Z ;
-
-end
-
-function ortho = makeortho(dense,dx,justname,pstrajectory,sensor)
-xi = min(dense.As(:)):dx:max(dense.As(:));
-yi = min(dense.Xs(:)):dx:max(dense.Xs(:));
-[xg,yg]=meshgrid(xi,yi);
-
-ortho.As = xi;
-ortho.Xs = yi;
-
-[pt,AsAz]=getUSVIXsAsCoords(justname);
-[ortho.Eg,ortho.Ng]=calcXsAs(yg,xg,pt,AsAz,true);
-
-R = uint8(roundgridfun(dense.As,dense.Xs,double(dense.R),xg,yg,@mean));
-G = uint8(roundgridfun(dense.As,dense.Xs,double(dense.G),xg,yg,@mean));
-B = uint8(roundgridfun(dense.As,dense.Xs,double(dense.B),xg,yg,@mean));
-
-[ortho.Zg,npts] = roundgridfun(dense.As,dense.Xs,double(dense.Z),xg,yg,@mean);
-R(npts==0)=255;
-G(npts==0)=255;
-B(npts==0)=255;
-
-ortho.ptdensity = npts./(dx^2);
-ortho.ptdensity(npts==0)=nan;
-
-ortho.rgb = cat(3,R,G,B);
-
-ortho.ncameras = calcncameras(ortho,pstrajectory,sensor);
-
-
 end

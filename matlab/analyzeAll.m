@@ -15,7 +15,7 @@
 %  - z bias
 %  - z std
 %  - 2D xcorr RMSE
-
+DX = 2;
 SEARCHDIR = 'P:\Slocum\USVI_project\01_DATA\20180319_USVI_UAS_BATHY\02_PROCDATA\06_PROCIMAGES\*\06_QUICKPROC\';
 [fnames,~] = dirname('*.psx',5,SEARCHDIR);
 [dnames, justname, ext] = filepartsstruct(fnames);
@@ -63,7 +63,6 @@ for i=1:numel(dnames)
    fprintf('   loading %-20s ... %s\n','sparse pointcloud',datestr(now));
    sparse = readLAS(sparsepcname);
    [sparse.Xs, sparse.As] = calcXsAs(sparse.E,sparse.N,pt,AsAz);
-
    %% Load Comparison Data based on date
    % fprintf('   loading %-20s ... %s\n','Ortho (this is slow)',datestr(now));
    % ortho = getOrtho(justname);
@@ -74,12 +73,35 @@ for i=1:numel(dnames)
       controldata = []; 
    end
    tideval = importdata(tidevalname);
+   %% Analyze Data
+   % generate ortho
+   fprintf('   calculating %-20s ... %s\n','Ortho',datestr(now));
+   ortho = makeortho(dense,DX,justname,pstrajectory,sensor);
+
+   % compute camera position errors
+   fprintf('   calculating %-20s ... %s\n','Trajectory Error',datestr(now));
+   camposerror = calccamposerror(pstrajectory,trajectory); 
+   
    
    %% Make SfM Stats Plot
-   makeSfMStatsPlot(sprintf('test%3i.png',i),justname,pstrajectory,trajectory,sensor,dense,sparse,tideval)
-   drawnow;
+   makeSfMStatsPlot(sprintf('test%3i.png',i),justname,pstrajectory,trajectory,sensor,dense,sparse,tideval, ortho, camposerror);
+   
+   %% Make SfM2Control
+   
+   %% Make SfM2Lidar
+   
+   %% Make Dietrich
+   
+   %% Make Dietrich2Control
+   
+   %% Make Dietrich2lidar
+   
+   %% Make DietrichAnalysis
+   
+   %% Make 2D Correlation Error
+   
+   %% Output Data
+   
 end
 
-
-% end
 
