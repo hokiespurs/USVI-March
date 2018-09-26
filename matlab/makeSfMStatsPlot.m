@@ -1,4 +1,4 @@
-function makeSfMStatsPlot(fname,justname,pstrajectory,trajectory,sensor,dense,sparse,tideval, ortho, camposerror)
+function makeSfMStatsPlot(fname,justname,pstrajectory,trajectory,sensor,dense,sparse,tideval, ortho, camposerror,trajectoryAll)
 %% Make 3x3 figure with lots of info
 f = figure(100);clf
 axg = axgrid(3,3,0.1,0.1,0.05,0.9,0.05,0.95);
@@ -61,9 +61,9 @@ orthogray = rgb2gray(ortho.rgb);
 orthogray = cat(3,orthogray,orthogray,orthogray);
 hi = imagesc(ortho.As,ortho.Xs,orthogray);
 hold on
+plot(trajectoryAll.As,trajectoryAll.Xs,'m.','markersize',5);
 hq = quiver(camposerror.As,camposerror.Xs,camposerror.dAs,camposerror.dXs,'r');
 hs = scatter(camposerror.As,camposerror.Xs,30,camposerror.dZ,'filled');
-plot(trajectory.As,trajectory.Xs,'m.','markersize',30);
 
 hl = legend({sprintf('XY Error (Scale=%.1f)',hq.AutoScaleFactor),'Z Error'},LEGENDARGS{:},'location','northoutside');
 oldlegendpos = hl.Position;

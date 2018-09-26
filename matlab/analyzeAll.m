@@ -50,6 +50,8 @@ for i=1:numel(dnames)
    
    fprintf('   loading %-20s ... %s\n','trajectory',datestr(now));
    trajectoryAll = readPreTrajectory(trajectoryname);
+   [trajectoryAll.Xs, trajectoryAll.As] = calcXsAs(trajectoryAll.E,trajectoryAll.N,pt,AsAz);
+   
    trajectory = trimTrajectory(trajectoryAll,pstrajectory);
    [trajectory.Xs, trajectory.As] = calcXsAs(trajectory.E,trajectory.N,pt,AsAz);
 
@@ -84,7 +86,7 @@ for i=1:numel(dnames)
    
    
    %% Make SfM Stats Plot
-   makeSfMStatsPlot(sprintf('test%3i.png',i),justname,pstrajectory,trajectory,sensor,dense,sparse,tideval, ortho, camposerror);
+   makeSfMStatsPlot(sprintf('test%3i.png',i),justname,pstrajectory,trajectory,sensor,dense,sparse,tideval, ortho, camposerror, trajectoryAll);
    
    %% Make SfM2Control
    
