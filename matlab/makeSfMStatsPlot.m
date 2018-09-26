@@ -12,9 +12,6 @@ TEXTARGS = {'interpreter','latex','fontsize',14};
 %% Ortho
 h(1) = axg(1);
 imagesc(ortho.As,ortho.Xs,ortho.rgb);
-hold on
-plot(trajectory.As,trajectory.Xs,'m.','markersize',5);
-plot(pstrajectory.As,pstrajectory.Xs,'g.','markersize',5);
 
 set(gca,'ydir','normal');
 axis equal
@@ -66,6 +63,7 @@ hi = imagesc(ortho.As,ortho.Xs,orthogray);
 hold on
 hq = quiver(camposerror.As,camposerror.Xs,camposerror.dAs,camposerror.dXs,'r');
 hs = scatter(camposerror.As,camposerror.Xs,30,camposerror.dZ,'filled');
+plot(trajectory.As,trajectory.Xs,'m.','markersize',30);
 
 hl = legend({sprintf('XY Error (Scale=%.1f)',hq.AutoScaleFactor),'Z Error'},LEGENDARGS{:},'location','northoutside');
 oldlegendpos = hl.Position;
