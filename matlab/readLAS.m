@@ -1,6 +1,6 @@
-function laspts = readLAS(sparsepcname)
+function laspts = readLAS(pcname)
 
-rawlasdata = LASread(sparsepcname, false, false);
+rawlasdata = LASread(pcname, false, false);
 
 laspts.E = rawlasdata.record.x;
 laspts.N = rawlasdata.record.y;

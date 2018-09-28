@@ -16,6 +16,8 @@
 %  - z std
 %  - 2D xcorr RMSE
 DX = 2;
+DXCOMPARE = 1;
+
 SEARCHDIR = 'P:\Slocum\USVI_project\01_DATA\20180319_USVI_UAS_BATHY\02_PROCDATA\06_PROCIMAGES\*\06_QUICKPROC\';
 [fnames,~] = dirname('*.psx',5,SEARCHDIR);
 [dnames, justname, ext] = filepartsstruct(fnames);
@@ -69,11 +71,9 @@ for i=1:numel(dnames)
    % fprintf('   loading %-20s ... %s\n','Ortho (this is slow)',datestr(now));
    % ortho = getOrtho(justname);
    fprintf('   loading %-20s ... %s\n','Control Data',datestr(now));
-   try
-        controldata = getControl(justname);
-   catch
-      controldata = []; 
-   end
+   [controldata, lidarcontrol] = getControl(justname);
+   
+   % get tide
    tideval = importdata(tidevalname);
    %% Analyze Data
    % generate ortho
@@ -83,16 +83,28 @@ for i=1:numel(dnames)
    % compute camera position errors
    fprintf('   calculating %-20s ... %s\n','Trajectory Error',datestr(now));
    camposerror = calccamposerror(pstrajectory,trajectory); 
+
+   % compare raw SfM control/lidar
+   fprintf('   calculating %-20s ... %s\n','Control Comparison',datestr(now));
+   sfmcompare = calcsfm2control(sparse,dense,controldata,lidarcontrol,DXCOMPARE);
    
+   % compute Dietrich
+   dietrich = calcdietrich(ortho, tideval, pstrajectory, sensor);
    
    %% Make SfM Stats Plot
-   makeSfMStatsPlot(sprintf('test%3i.png',i),justname,pstrajectory,trajectory,sensor,dense,sparse,tideval, ortho, camposerror, trajectoryAll);
+   f1 = makeSfMStatsPlot(sprintf('test%3i.png',i),justname,pstrajectory,trajectory,sensor,dense,sparse,tideval, ortho, camposerror, trajectoryAll);
    
-   %% Make SfM2Control
+   %% Make SfM2Control 
+   f2 = makeSfM2controlPlot(ortho,sfmcompare, justname);
+   
    
    %% Make SfM2Lidar
+   f3 = makeSfM2lidarPlot(ortho,sfmcompare, justname);
+   
    
    %% Make Dietrich
+   f4 = plotDietrich(ortho,dietrich,tideval,sfmcompare);
+   
    
    %% Make Dietrich2Control
    
@@ -104,6 +116,19 @@ for i=1:numel(dnames)
    
    %% Output Data
    
+   %% Save Figures
+   try
+       saveas(f1,['img/A' justname '.png']);
+       saveas(f1,['img/fig/A' justname '.png']);
+       saveas(f2,['img/B' justname '.png']);
+       saveas(f2,['img/fig/B' justname '.png']);
+       saveas(f3,['img/C' justname '.png']);
+       saveas(f3,['img/fig/C' justname '.png']);
+       saveas(f4,['img/D' justname '.png']);
+       saveas(f4,['img/fig/D' justname '.png']);
+   catch
+       fprintf('didnt want to save %s\n',justname);
+   end
 end
 
 

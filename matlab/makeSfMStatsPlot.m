@@ -1,6 +1,8 @@
-function makeSfMStatsPlot(fname,justname,pstrajectory,trajectory,sensor,dense,sparse,tideval, ortho, camposerror,trajectoryAll)
+function f = makeSfMStatsPlot(fname,justname,pstrajectory,trajectory,sensor,dense,sparse,tideval, ortho, camposerror,trajectoryAll)
 %% Make 3x3 figure with lots of info
 f = figure(100);clf
+set(f,'units','normalize','position',[0.05 0.05 0.8 0.8])
+
 axg = axgrid(3,3,0.1,0.1,0.05,0.9,0.05,0.95);
 h = nan(1,9);
 XLABELARGS = {'interpreter','latex','fontsize',16};
@@ -163,8 +165,5 @@ ylabel('Frequency',YLABELARGS{:});
 title('Point Density',TITLEARGS{:});
 
 %% Big Title
-bigtitle(justname,0.5,0.95,'interpreter','latex','fontsize',24);
-
-%% Save Figure
-saveas(f,fname);
+bigtitle(strrep(justname,'_','\_'),0.5,0.95,'interpreter','latex','fontsize',24);
 end

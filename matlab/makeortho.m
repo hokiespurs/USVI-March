@@ -23,6 +23,8 @@ ortho.ptdensity(npts==0)=nan;
 
 ortho.rgb = cat(3,R,G,B);
 
+ortho.gray = repmat(rgb2gray(ortho.rgb),[1 1 3]);
+
 ortho.ncameras = calcncameras(ortho,pstrajectory,sensor);
 
 end
