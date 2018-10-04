@@ -18,14 +18,16 @@ Xsg = sfmcompare.XsGrid;
 %dense
 dZdense = sfmcompare.dense.dLidar;
 
-udZdense = nanmean(dZdense(:));
-stddZdense = nanstd(dZdense(:));
+% udZdense = nanmean(dZdense(:));
+% stddZdense = nanstd(dZdense(:));
+[udZdense,stddZdense] = stdnooutlier(dZdense(:),3);
 
 %sparse
 dZsparse = sfmcompare.sparse.dLidar;
 
-udZsparse = nanmean(dZsparse(:));
-stddZsparse = nanstd(dZsparse(:));
+% udZsparse = nanmean(dZsparse(:));
+% stddZsparse = nanstd(dZsparse(:));
+[udZsparse,stddZsparse] = stdnooutlier(dZsparse(:),3);
 
 
 %% Dense Plots
@@ -56,20 +58,20 @@ hcolorbar.FontSize = 14;
 hcolorbar.Ticks = -.5:0.1:0.5;
 hcolorbar.TickLabelInterpreter = 'latex';
 hcolorbar.TickLabels = num2labelstr(-.5:0.1:0.5,'$%+3.1f$');
-hcolorbar.Label.FontSize = 16
+hcolorbar.Label.FontSize = 16;
 % histogram dense
 axg(3:4);
 
-histogram(dZsparse,HISTRANGE+udZsparse,'normalization','probability')
+histogram(dZsparse,HISTRANGE,'normalization','probability')
 hold on
-histogram(dZdense,HISTRANGE+udZdense,'normalization','probability')
+histogram(dZdense,HISTRANGE,'normalization','probability')
 
 
-mypdfsparse = normpdf(HISTRANGE+udZsparse,udZsparse,stddZsparse)*mean(diff(HISTRANGE));
-plot(HISTRANGE+udZsparse,mypdfsparse,'b-','linewidth',3);
+mypdfsparse = normpdf(HISTRANGE,udZsparse,stddZsparse)*mean(diff(HISTRANGE));
+plot(HISTRANGE,mypdfsparse,'b-','linewidth',3);
 
-mypdfdense = normpdf(HISTRANGE+udZdense,udZdense,stddZdense)*mean(diff(HISTRANGE));
-plot(HISTRANGE+udZdense,mypdfdense,'r-','linewidth',3);
+mypdfdense = normpdf(HISTRANGE,udZdense,stddZdense)*mean(diff(HISTRANGE));
+plot(HISTRANGE,mypdfdense,'r-','linewidth',3);
 
 % text(0.65,0.85,sprintf('$\\mu = %07.3fm$',udZ),...
 %     'interpreter','latex','fontsize',16,'units','normalize');
@@ -77,7 +79,7 @@ plot(HISTRANGE+udZdense,mypdfdense,'r-','linewidth',3);
 %     'interpreter','latex','fontsize',16,'units','normalize');
 
 
-xlim([HISTRANGE(1)+min([udZsparse udZdense]) HISTRANGE(end)+max([udZsparse udZdense])])
+xlim([HISTRANGE(1) HISTRANGE(end)])
 grid on
 % make manual legend
 text(0.15,0.9,'Sparse SfM','interpreter','latex','fontsize',16,'units','normalize','Color','b');
@@ -89,9 +91,9 @@ text(0.15,0.6,sprintf('$N$ = %7.0f',sum(~isnan(dZsparse(:)))),...
     'interpreter','latex','fontsize',16,'units','normalize','Color','b');
 
 text(0.75,0.9,'Dense SfM','interpreter','latex','fontsize',16,'units','normalize','Color','r');
-text(0.75,0.8,sprintf('$\\mu$ = %07.3fm',udZdense),...
+text(0.75,0.8,sprintf('$\\mu$ = %7.3fm',udZdense),...
     'interpreter','latex','fontsize',16,'units','normalize','Color','r');
-text(0.75,0.7,sprintf('$\\sigma$ = %07.3fm',stddZdense),...
+text(0.75,0.7,sprintf('$\\sigma$ = %7.3fm',stddZdense),...
     'interpreter','latex','fontsize',16,'units','normalize','Color','r');
 text(0.75,0.6,sprintf('$ N $ = %7.0f',sum(~isnan(dZdense(:)))),...
     'interpreter','latex','fontsize',16,'units','normalize','Color','r');
@@ -109,7 +111,7 @@ function makePcolor(ortho,As,Xs,dZ,udZ)
 % scatter dense
 imagesc(ortho.As,ortho.Xs,ortho.gray);
 hold on
-pcolor(As, Xs, dZ-udZ);shading flat
+pcolor(As, Xs, dZ);shading flat
 caxis([-2 2]);
 colormap(cmapdiverge);
 axis equal

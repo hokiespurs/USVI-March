@@ -2,3 +2,5 @@
 *.sbp
 exampleFiles
 *.asv
+*.png
+*.fig

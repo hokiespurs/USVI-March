@@ -1,5 +1,5 @@
-function f = makeSfM2controlPlot(ortho,sfmcompare,justname)
-
+function f = plotDietrich2control(ortho,dietrich, sfmcompare, justname)
+%%
 XLABELARGS = {'interpreter','latex','fontsize',16};
 YLABELARGS = {'interpreter','latex','fontsize',16};
 TITLEARGS = {'interpreter','latex','fontsize',20};
@@ -16,30 +16,31 @@ Asg = sfmcompare.AsGrid;
 Xsg = sfmcompare.XsGrid;
 
 %dense
-isgooddense = ~isnan(sfmcompare.dense.dControl);
+dZdenseAll = dietrich.dense.corDepth-sfmcompare.control.Zg;
+isgooddense = ~isnan(dZdenseAll);
 
 Asdense = Asg(isgooddense);
 Xsdense = Xsg(isgooddense);
-dZdense = sfmcompare.dense.dControl(isgooddense);
+dZdense = dZdenseAll(isgooddense);
 
 % udZdense = nanmean(dZdense(:));
 % stddZdense = nanstd(dZdense(:));
 [udZdense,stddZdense] = stdnooutlier(dZdense(:),3);
 
 %sparse
-isgoodsparse = ~isnan(sfmcompare.sparse.dControl);
+dZsparseAll = dietrich.sparse.corDepth-sfmcompare.control.Zg;
+isgoodsparse = ~isnan(dZsparseAll);
 
 Assparse = Asg(isgoodsparse);
 Xssparse = Xsg(isgoodsparse);
-dZsparse = sfmcompare.sparse.dControl(isgoodsparse);
+dZsparse = dZsparseAll(isgoodsparse);
 
 % udZsparse = nanmean(dZsparse(:));
 % stddZsparse = nanstd(dZsparse(:));
 [udZsparse,stddZsparse] = stdnooutlier(dZsparse(:),3);
 
-
 %% Dense Plots
-f = figure(101);clf;
+f = figure(104);clf;
 set(f,'units','normalize','position',[0.05 0.05 0.8 0.8])
 % make scatter dense
 h2 = axg(2);

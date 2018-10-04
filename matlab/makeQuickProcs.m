@@ -62,13 +62,20 @@ for i=1:numel(dnames)
            imagestouse = '';
        end
        
-       args = {'projectname',[strrep(justname,'_','') '_' procnames{j}],...
+       if contains(name,'MAVIC')
+           camposacc = 1;
+       else
+           camposacc = 1/20;
+       end
+       
+       args = {'projectname',[strrep(justname,'_','') '_' procnames{j} '_trajacc'],...
                'trajectory',trajname,...
                'control',controlname,...
                'imagestouse',imagestouse,...
-               'outputroot',['./' outputroot procnames{j}]};
+               'outputroot',['./' outputroot procnames{j} '_trajacc'],...
+               'camposacc',camposacc};
            
-       writeprocsettings([name procnames{j} '.xml'],args{:})
+       writeprocsettings([name procnames{j} '_trajacc.xml'],args{:})
    end
     
 end

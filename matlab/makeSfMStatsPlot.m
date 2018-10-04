@@ -136,10 +136,10 @@ title('Points / $m^2$',TITLEARGS{:});
 %% Histogram Camera Error
 h(9) = axg(9);
 hold off
-histogram(camposerror.dAs,-3:0.1:3);
+histogram(camposerror.dAs,-2:0.05:2);
 hold on
-histogram(camposerror.dXs,-3:0.1:3);
-histogram(camposerror.dZ,-3:0.1:3);
+histogram(camposerror.dXs,-2:0.05:2);
+histogram(camposerror.dZ,-2:0.05:2);
 
 legendstr = {'$\Delta$ As','$\Delta$ Xs','$\Delta$ Z'};
 legend(legendstr,LEGENDARGS{:});

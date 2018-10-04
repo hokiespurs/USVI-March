@@ -15,8 +15,8 @@
 %  - z bias
 %  - z std
 %  - 2D xcorr RMSE
-DX = 2;
-DXCOMPARE = 1;
+DX = 4;
+DXCOMPARE = 2;
 
 SEARCHDIR = 'P:\Slocum\USVI_project\01_DATA\20180319_USVI_UAS_BATHY\02_PROCDATA\06_PROCIMAGES\*\06_QUICKPROC\';
 [fnames,~] = dirname('*.psx',5,SEARCHDIR);
@@ -86,46 +86,77 @@ for i=1:numel(dnames)
 
    % compare raw SfM control/lidar
    fprintf('   calculating %-20s ... %s\n','Control Comparison',datestr(now));
-   sfmcompare = calcsfm2control(sparse,dense,controldata,lidarcontrol,DXCOMPARE);
+   sfmcompare = calcsfm2control(sparse,dense,controldata,lidarcontrol,DXCOMPARE, justname);
    
-   % compute Dietrich
-   dietrich = calcdietrich(ortho, tideval, pstrajectory, sensor);
+   % compute Dietrich and compare dietrich
+   fprintf('   calculating %-20s ... %s\n','Dietrich',datestr(now));
+   dietrich = calcdietrich(tideval, pstrajectory, sensor, sfmcompare);
    
    %% Make SfM Stats Plot
-   f1 = makeSfMStatsPlot(sprintf('test%3i.png',i),justname,pstrajectory,trajectory,sensor,dense,sparse,tideval, ortho, camposerror, trajectoryAll);
-   
-   %% Make SfM2Control 
-   f2 = makeSfM2controlPlot(ortho,sfmcompare, justname);
-   
+   try
+       f1 = makeSfMStatsPlot(sprintf('test%3i.png',i),justname,pstrajectory,trajectory,sensor,dense,sparse,tideval, ortho, camposerror, trajectoryAll);
+   catch
+       fprintf('failed to make F1\n');
+   end
+   %% Make SfM2Control
+   try
+       f2 = makeSfM2controlPlot(ortho,sfmcompare, justname);
+   catch
+       fprintf('failed to make F2\n');
+   end
    
    %% Make SfM2Lidar
-   f3 = makeSfM2lidarPlot(ortho,sfmcompare, justname);
-   
+   try
+       f3 = makeSfM2lidarPlot(ortho,sfmcompare, justname);
+   catch
+       fprintf('failed to make F3\n');
+   end
    
    %% Make Dietrich
-   f4 = plotDietrich(ortho,dietrich,tideval,sfmcompare);
-   
+   try
+       f4 = plotDietrich(ortho,dietrich,tideval,sfmcompare, justname);
+   catch
+       fprintf('failed to make F4\n');
+   end
    
    %% Make Dietrich2Control
-   
+   try
+       f5 = plotDietrich2control(ortho,dietrich, sfmcompare, justname);
+   catch
+       fprintf('failed to make F5\n');
+   end
    %% Make Dietrich2lidar
-   
+   try
+       f6 = plotDietrich2lidar(ortho,dietrich,tideval,sfmcompare, justname);
+   catch
+       fprintf('failed to make F6\n');
+   end
    %% Make DietrichAnalysis
-   
+   try
+       f7 = makeDietrichAnalysis(ortho,dietrich,tideval,sfmcompare, justname);
+   catch
+       fprintf('failed to make F7\n');
+   end
    %% Make 2D Correlation Error
    
    %% Output Data
    
    %% Save Figures
    try
-       saveas(f1,['img/A' justname '.png']);
-       saveas(f1,['img/fig/A' justname '.png']);
-       saveas(f2,['img/B' justname '.png']);
-       saveas(f2,['img/fig/B' justname '.png']);
-       saveas(f3,['img/C' justname '.png']);
-       saveas(f3,['img/fig/C' justname '.png']);
-       saveas(f4,['img/D' justname '.png']);
-       saveas(f4,['img/fig/D' justname '.png']);
+       saveas(f1,['img/' justname '_A.png']);
+       saveas(f1,['img/fig/' justname '_A.fig']);
+       saveas(f2,['img/' justname '_B.png']);
+       saveas(f2,['img/fig/' justname '_B.fig']);
+       saveas(f3,['img/' justname '_C.png']);
+       saveas(f3,['img/fig/' justname '_C.fig']);
+       saveas(f4,['img/' justname '_D.png']);
+       saveas(f4,['img/fig/' justname '_D.fig']);
+       saveas(f5,['img/' justname '_E.png']);
+       saveas(f5,['img/fig/' justname '_E.fig']);
+       saveas(f6,['img/' justname '_F.png']);
+       saveas(f6,['img/fig/' justname '_F.fig']);
+       saveas(f7,['img/' justname '_G.png']);
+       saveas(f7,['img/fig/' justname '_G.fig']);
    catch
        fprintf('didnt want to save %s\n',justname);
    end

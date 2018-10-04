@@ -1,8 +1,11 @@
-function sfmcompare = calcsfm2control(sparse,dense,controldata,lidarcontrol,dx)
+function sfmcompare = calcsfm2control(sparse,dense,controldata,lidarcontrol,dx, justname)
 
 Xsi = min(dense.Xs(:)):dx:max(dense.Xs(:));
 Asi = min(dense.As(:)):dx:max(dense.As(:));
 [sfmcompare.AsGrid,sfmcompare.XsGrid]=meshgrid(Asi,Xsi);
+
+[pt,AsAz]=getUSVIXsAsCoords(justname);
+[sfmcompare.Eg,sfmcompare.Ng]=calcXsAs(sfmcompare.XsGrid,sfmcompare.AsGrid,pt,AsAz,true);
 
 % grid pointcloud
 sfmcompare.dense.Zg = roundgridfun(dense.As,dense.Xs,dense.Z,sfmcompare.AsGrid,sfmcompare.XsGrid,@mean);
