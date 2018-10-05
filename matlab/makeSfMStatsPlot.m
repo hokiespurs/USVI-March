@@ -1,4 +1,4 @@
-function f = makeSfMStatsPlot(fname,justname,pstrajectory,trajectory,sensor,dense,sparse,tideval, ortho, camposerror,trajectoryAll)
+function f = makeSfMStatsPlot(justname,sensor,tideval, ortho, camposerror,trajectoryAll, markers)
 %% Make 3x3 figure with lots of info
 f = figure(100);clf
 set(f,'units','normalize','position',[0.05 0.05 0.8 0.8])
@@ -14,6 +14,16 @@ TEXTARGS = {'interpreter','latex','fontsize',14};
 %% Ortho
 h(1) = axg(1);
 imagesc(ortho.As,ortho.Xs,ortho.rgb);
+hold on
+hq = quiver(markers.As,markers.Xs,1000*markers.dAs,1000*markers.dXs,0,'r');
+hs = scatter(markers.As,markers.Xs,30,markers.dZ,'filled');
+hl = legend({sprintf('XY Error (Scale=%.0f)',1000),'Z Error'},LEGENDARGS{:},'location','northoutside');
+
+oldlegendpos = hl.Position;
+newlegendpos = oldlegendpos + [0 0.075 0 0];
+hl.Position = newlegendpos;
+
+colorbar
 
 set(gca,'ydir','normal');
 axis equal
@@ -63,11 +73,12 @@ orthogray = rgb2gray(ortho.rgb);
 orthogray = cat(3,orthogray,orthogray,orthogray);
 hi = imagesc(ortho.As,ortho.Xs,orthogray);
 hold on
+hq = quiver(camposerror.As,camposerror.Xs,100*camposerror.dAs,100*camposerror.dXs,0,'r');
+hs = scatter(camposerror.As,camposerror.Xs,30,camposerror.dZ,'filled');
 plot(trajectoryAll.As,trajectoryAll.Xs,'m.','markersize',5);
-hq = quiver(camposerror.As,camposerror.Xs,camposerror.dAs,camposerror.dXs,'r');
 hs = scatter(camposerror.As,camposerror.Xs,30,camposerror.dZ,'filled');
 
-hl = legend({sprintf('XY Error (Scale=%.1f)',hq.AutoScaleFactor),'Z Error'},LEGENDARGS{:},'location','northoutside');
+hl = legend({sprintf('XY Error (Scale=%.0f)',100),'Z Error'},LEGENDARGS{:},'location','northoutside');
 oldlegendpos = hl.Position;
 newlegendpos = oldlegendpos + [0 0.075 0 0];
 hl.Position = newlegendpos;

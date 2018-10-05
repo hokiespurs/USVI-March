@@ -15,8 +15,8 @@
 %  - z bias
 %  - z std
 %  - 2D xcorr RMSE
-DX = 4;
-DXCOMPARE = 2;
+DX = 8;
+DXCOMPARE = 4;
 
 SEARCHDIR = 'P:\Slocum\USVI_project\01_DATA\20180319_USVI_UAS_BATHY\02_PROCDATA\06_PROCIMAGES\*\06_QUICKPROC\';
 [fnames,~] = dirname('*.psx',5,SEARCHDIR);
@@ -41,6 +41,7 @@ for i=1:numel(dnames)
 
    densepcname      = [dname '/dense.las'];
    sparsepcname     = [dname '/sparse.las'];
+   markersname      = [dname '/markers.txt'];
    
    tidevalname      = [dname '/../../07_TIDE/tideval.txt'];
    %% Load Data
@@ -59,6 +60,13 @@ for i=1:numel(dnames)
 
    fprintf('   loading %-20s ... %s\n','camera calibration',datestr(now));
    sensor = readSensor(cameracalibname);
+   
+   fprintf('   loading %-20s ... %s\n','GCPs',datestr(now));
+   markers = readMarkers(markersname);
+   [markers.Xs, markers.As] = calcXsAs(markers.E,markers.N,pt,AsAz);
+   [markers.estXs, markers.estAs] = calcXsAs(markers.E+markers.dE,markers.N+markers.dN,pt,AsAz);
+   markers.dXs = markers.estXs-markers.Xs;
+   markers.dAs = markers.estAs-markers.As;
    
    fprintf('   loading %-20s ... %s\n','dense pointcloud',datestr(now));
    dense = readLAS(densepcname);
@@ -94,7 +102,7 @@ for i=1:numel(dnames)
    
    %% Make SfM Stats Plot
    try
-       f1 = makeSfMStatsPlot(sprintf('test%3i.png',i),justname,pstrajectory,trajectory,sensor,dense,sparse,tideval, ortho, camposerror, trajectoryAll);
+       f1 = makeSfMStatsPlot(justname,sensor,tideval, ortho, camposerror,trajectoryAll, markers);
    catch
        fprintf('failed to make F1\n');
    end

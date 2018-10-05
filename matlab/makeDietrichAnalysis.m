@@ -151,7 +151,7 @@ caxis([0.95 2.05]);
 colormap(hc2,jet(11));
 
 hc3 = bigcolorbarax(h(9),0.01,0.02,'Difference(m)','interpreter','latex','fontsize',12);
-caxis([-1.05 1.05]);
+caxis([-.55 .55]);
 colormap(hc3,cmapdiverge);
 %%
 bigtitle('Dietrich Analysis',0.5,0.94,'fontsize',24,'interpreter','latex');
