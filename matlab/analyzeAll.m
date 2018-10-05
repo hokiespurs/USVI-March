@@ -18,6 +18,8 @@
 DX = 8;
 DXCOMPARE = 4;
 
+OUTFIGDIR = 'P:\Slocum\USVI_project\01_DATA\20180319_USVI_UAS_BATHY\02_PROCDATA\11_FIGURES\01_ANALYZEALL\';
+
 SEARCHDIR = 'P:\Slocum\USVI_project\01_DATA\20180319_USVI_UAS_BATHY\02_PROCDATA\06_PROCIMAGES\*\06_QUICKPROC\';
 [fnames,~] = dirname('*.psx',5,SEARCHDIR);
 [dnames, justname, ext] = filepartsstruct(fnames);
@@ -151,20 +153,26 @@ for i=1:numel(dnames)
    
    %% Save Figures
    try
-       saveas(f1,['img/' justname '_A.png']);
-       saveas(f1,['img/fig/' justname '_A.fig']);
-       saveas(f2,['img/' justname '_B.png']);
-       saveas(f2,['img/fig/' justname '_B.fig']);
-       saveas(f3,['img/' justname '_C.png']);
-       saveas(f3,['img/fig/' justname '_C.fig']);
-       saveas(f4,['img/' justname '_D.png']);
-       saveas(f4,['img/fig/' justname '_D.fig']);
-       saveas(f5,['img/' justname '_E.png']);
-       saveas(f5,['img/fig/' justname '_E.fig']);
-       saveas(f6,['img/' justname '_F.png']);
-       saveas(f6,['img/fig/' justname '_F.fig']);
-       saveas(f7,['img/' justname '_G.png']);
-       saveas(f7,['img/fig/' justname '_G.fig']);
+       saveas(f1,[OUTFIGDIR justname '_A.png']);
+       saveas(f1,[OUTFIGDIR 'fig/' justname '_A.fig']);
+       
+       saveas(f2,[OUTFIGDIR justname '_B.png']);
+       saveas(f2,[OUTFIGDIR 'fig/' justname '_B.fig']);
+       
+       saveas(f3,[OUTFIGDIR justname '_C.png']);
+       saveas(f3,[OUTFIGDIR 'fig/' justname '_C.fig']);
+       
+       saveas(f4,[OUTFIGDIR justname '_D.png']);
+       saveas(f4,[OUTFIGDIR 'fig/' justname '_D.fig']);
+       
+       saveas(f5,[OUTFIGDIR justname '_E.png']);
+       saveas(f5,[OUTFIGDIR 'fig/' justname '_E.fig']);
+       
+       saveas(f6,[OUTFIGDIR justname '_F.png']);
+       saveas(f6,[OUTFIGDIR 'fig/' justname '_F.fig']);
+       
+       saveas(f7,[OUTFIGDIR justname '_G.png']);
+       saveas(f7,[OUTFIGDIR 'fig/' justname '_G.fig']);
    catch
        fprintf('didnt want to save %s\n',justname);
    end
