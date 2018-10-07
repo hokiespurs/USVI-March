@@ -15,13 +15,13 @@
 %  - z bias
 %  - z std
 %  - 2D xcorr RMSE
-DX = 8;
-DXCOMPARE = 4;
-
+DX = 4; 
+DXCOMPARE = 2;
+DOREPROCESS = false;
 OUTFIGDIR = 'P:\Slocum\USVI_project\01_DATA\20180319_USVI_UAS_BATHY\02_PROCDATA\11_FIGURES\01_ANALYZEALL\';
 
 SEARCHDIR = 'P:\Slocum\USVI_project\01_DATA\20180319_USVI_UAS_BATHY\02_PROCDATA\06_PROCIMAGES\*\06_QUICKPROC\';
-[fnames,~] = dirname('*.psx',5,SEARCHDIR);
+[fnames,~] = dirname('*SOLO*trajacc*.psx',5,SEARCHDIR);
 [dnames, justname, ext] = filepartsstruct(fnames);
 [D,F2,~]=filepartsstruct(dnames);
 [D,~,~]=filepartsstruct(D);
@@ -35,6 +35,12 @@ for i=1:numel(dnames)
    analysisdir = [dname '/analysis'];
    if ~exist(analysisdir,'dir')
       mkdir(analysisdir); 
+   end
+   
+   %% Dont process if already exists
+   if ~DOREPROCESS && exist([analysisdir '/' justname '_A.png'],'file')
+       fprintf('\t Already Exists\n');
+       continue
    end
    %% Data Filenames 
    trajectoryname   = [dname '/../../02_TRAJECTORY/imageposUTM.csv'];
@@ -155,24 +161,31 @@ for i=1:numel(dnames)
    try
        saveas(f1,[OUTFIGDIR justname '_A.png']);
        saveas(f1,[OUTFIGDIR 'fig/' justname '_A.fig']);
+       saveas(f1,[analysisdir '/' justname '_A.png']);
        
        saveas(f2,[OUTFIGDIR justname '_B.png']);
        saveas(f2,[OUTFIGDIR 'fig/' justname '_B.fig']);
+       saveas(f2,[analysisdir '/' justname '_B.png']);
        
        saveas(f3,[OUTFIGDIR justname '_C.png']);
        saveas(f3,[OUTFIGDIR 'fig/' justname '_C.fig']);
+       saveas(f3,[analysisdir '/' justname '_C.png']);
        
        saveas(f4,[OUTFIGDIR justname '_D.png']);
        saveas(f4,[OUTFIGDIR 'fig/' justname '_D.fig']);
+       saveas(f4,[analysisdir '/' justname '_D.png']);
        
        saveas(f5,[OUTFIGDIR justname '_E.png']);
        saveas(f5,[OUTFIGDIR 'fig/' justname '_E.fig']);
+       saveas(f5,[analysisdir '/' justname '_E.png']);
        
        saveas(f6,[OUTFIGDIR justname '_F.png']);
        saveas(f6,[OUTFIGDIR 'fig/' justname '_F.fig']);
+       saveas(f6,[analysisdir '/' justname '_F.png']);
        
        saveas(f7,[OUTFIGDIR justname '_G.png']);
        saveas(f7,[OUTFIGDIR 'fig/' justname '_G.fig']);
+       saveas(f7,[analysisdir '/' justname '_G.png']);
    catch
        fprintf('didnt want to save %s\n',justname);
    end

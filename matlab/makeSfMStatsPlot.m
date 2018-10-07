@@ -15,9 +15,15 @@ TEXTARGS = {'interpreter','latex','fontsize',14};
 h(1) = axg(1);
 imagesc(ortho.As,ortho.Xs,ortho.rgb);
 hold on
-hq = quiver(markers.As,markers.Xs,1000*markers.dAs,1000*markers.dXs,0,'r');
+axis equal
+ax = axis;
+indused = (markers.enabled==1);
+hq = quiver(markers.As(indused),markers.Xs(indused),1000*markers.dAs(indused),1000*markers.dXs(indused),0,'r');
+hq = quiver(markers.As(~indused),markers.Xs(~indused),1000*markers.dAs(~indused),1000*markers.dXs(~indused),0,'r');
 hs = scatter(markers.As,markers.Xs,30,markers.dZ,'filled');
-hl = legend({sprintf('XY Error (Scale=%.0f)',1000),'Z Error'},LEGENDARGS{:},'location','northoutside');
+hl = legend({sprintf('XY GCP Error Used(Scale=%.0f)',1000),...
+    sprintf('XY GCP Error Unused(Scale=%.0f)',1000),'Z Error'},...
+    LEGENDARGS{:},'location','northoutside');
 
 oldlegendpos = hl.Position;
 newlegendpos = oldlegendpos + [0 0.075 0 0];
@@ -26,7 +32,7 @@ hl.Position = newlegendpos;
 colorbar
 
 set(gca,'ydir','normal');
-axis equal
+axis(ax)
 
 xlabel('Along-shore(m)',XLABELARGS{:});
 ylabel('Cross-shore(m)',YLABELARGS{:});
@@ -46,7 +52,7 @@ colormap(h(2),parula(11));
 xlabel('Along-shore(m)',XLABELARGS{:});
 ylabel('Cross-shore(m)',YLABELARGS{:});
 title('Elevation(m)',TITLEARGS{:});
-
+ax = axis;
 %% Camera Calibration Table
 h(3) = axg(3);
 text(0,1.0,sprintf('Width : %10.0f',sensor.pixx),TEXTARGS{:});
@@ -96,6 +102,7 @@ title('Camera Error',TITLEARGS{:});
 
 set(gca,'ydir','normal');
 axis equal
+axis(ax);
 %% NCameras
 h(5) = axg(5);
 pcolor(ortho.As,ortho.Xs,ortho.ncameras);shading flat
