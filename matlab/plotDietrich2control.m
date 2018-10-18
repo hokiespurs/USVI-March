@@ -107,7 +107,7 @@ set(gca,'TickLabelInterpreter','latex');
 xlabel('Residual $\Delta$ Elevation (m)',XLABELARGS{:});
 ylabel('Probability',XLABELARGS{:});
 %%
-bigtitle('SfM vs Control Data',0.5,0.94,'fontsize',24,'interpreter','latex');
+bigtitle('Dietrich SfM vs Control Data',0.5,0.94,'fontsize',24,'interpreter','latex');
 bigtitle(strrep(justname,'_','\_'),0.5,0.9,TITLEARGS{:});
 end
 

@@ -17,11 +17,11 @@
 %  - 2D xcorr RMSE
 DX = 4; 
 DXCOMPARE = 2;
-DOREPROCESS = false;
-OUTFIGDIR = 'P:\Slocum\USVI_project\01_DATA\20180319_USVI_UAS_BATHY\02_PROCDATA\11_FIGURES\01_ANALYZEALL\';
+DOREPROCESS = true;
+OUTFIGDIR = 'P:\Slocum\USVI_project\01_DATA\20180319_USVI_UAS_BATHY\02_PROCDATA\11_FIGURES\01_ANALYZEALL2\';
 
 SEARCHDIR = 'P:\Slocum\USVI_project\01_DATA\20180319_USVI_UAS_BATHY\02_PROCDATA\06_PROCIMAGES\*\06_QUICKPROC\';
-[fnames,~] = dirname('*SOLO*trajacc*.psx',5,SEARCHDIR);
+[fnames,~] = dirname('*.psx',5,SEARCHDIR);
 [dnames, justname, ext] = filepartsstruct(fnames);
 [D,F2,~]=filepartsstruct(dnames);
 [D,~,~]=filepartsstruct(D);
@@ -156,7 +156,9 @@ for i=1:numel(dnames)
    %% Make 2D Correlation Error
    
    %% Output Data
-   
+   outmatname = [analysisdir '/' justname '.mat'];
+   save(outmatname,'ortho','dietrich','tideval','sfmcompare', 'justname',...
+       'sensor', 'camposerror','trajectoryAll', 'markers');
    %% Save Figures
    try
        saveas(f1,[OUTFIGDIR justname '_A.png']);

@@ -1,6 +1,6 @@
 function [controldata,lidarcontrol] = getControl(justname)
 
-[pt,AsAz,~,controlnames]=getUSVIXsAsCoords(justname);
+[pt,AsAz,~,controlnames, lidarbiasz]=getUSVIXsAsCoords(justname);
 
 if ~isempty(controlnames.kayakname)
     kayak = readControlData(controlnames.kayakname);
@@ -21,7 +21,7 @@ end
 if ~isempty(controlnames.lidarname)
     lidarcontrol = readLAS(controlnames.lidarname);
     [lidarcontrol.Xs,lidarcontrol.As] = calcXsAs(lidarcontrol.E,lidarcontrol.N,pt,AsAz);
-
+    lidarcontrol.Z = lidarcontrol.Z - lidarbiasz;
 else
     lidarcontrol = [];
 end
