@@ -17,7 +17,7 @@
 %  - 2D xcorr RMSE
 DX = 4; 
 DXCOMPARE = 2;
-DOREPROCESS = true;
+DOREPROCESS = false;
 OUTFIGDIR = 'P:\Slocum\USVI_project\01_DATA\20180319_USVI_UAS_BATHY\02_PROCDATA\11_FIGURES\01_ANALYZEALL2\';
 
 SEARCHDIR = 'P:\Slocum\USVI_project\01_DATA\20180319_USVI_UAS_BATHY\02_PROCDATA\06_PROCIMAGES\*\06_QUICKPROC\';
@@ -38,7 +38,8 @@ for i=1:numel(dnames)
    end
    
    %% Dont process if already exists
-   if ~DOREPROCESS && exist([analysisdir '/' justname '_A.png'],'file')
+   outmatname = [analysisdir '/' justname '.mat'];
+   if ~DOREPROCESS && exist(outmatname,'file')
        fprintf('\t Already Exists\n');
        continue
    end
@@ -156,7 +157,6 @@ for i=1:numel(dnames)
    %% Make 2D Correlation Error
    
    %% Output Data
-   outmatname = [analysisdir '/' justname '.mat'];
    save(outmatname,'ortho','dietrich','tideval','sfmcompare', 'justname',...
        'sensor', 'camposerror','trajectoryAll', 'markers');
    %% Save Figures
