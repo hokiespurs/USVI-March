@@ -25,6 +25,10 @@ ortho.rgb = cat(3,R,G,B);
 
 ortho.gray = repmat(rgb2gray(ortho.rgb),[1 1 3]);
 
-ortho.ncameras = calcncameras(ortho,pstrajectory,sensor);
+if nargin==5
+    ortho.ncameras = calcncameras(ortho,pstrajectory,sensor);
+else
+   ortho.ncameras = nan(size(ortho.Zg)); 
+end
 
 end
